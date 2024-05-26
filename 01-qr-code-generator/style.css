@@ -13,7 +13,7 @@ header {
   text-align: center;
 }
 
-main {
+.generator {
   display: flex;
   flex-direction: column;
   /* align-items: center; */
@@ -25,6 +25,11 @@ main {
   align-items: center;
   margin: 10px;
 }
+.reader {
+  background-color: #fff;
+  width: 600px;
+}
+
 #QR {
   margin: 10px 10px 10px 50px;
 }
