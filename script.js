@@ -33,22 +33,27 @@ const clearUI = () => {
 
 button.addEventListener("click", submitting);
 
-var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
-  fps: 10,
-  qrbox: 250,
+function domReady(fn) {
+    if (
+        document.readyState === "complete" ||
+        document.readyState === "interactive"
+    ) {
+        setTimeout(fn, 1000);
+    } else {
+        document.addEventListener("DOMContentLoaded", fn);
+    }
+}
+ 
+domReady(function () {
+ 
+    // If found you qr code
+    function onScanSuccess(decodeText, decodeResult) {
+        alert("You Qr is : " + decodeText, decodeResult);
+    }
+ 
+    let htmlscanner = new Html5QrcodeScanner(
+        "my-qr-reader",
+        { fps: 10, qrbos: 250 }
+    );
+    htmlscanner.render(onScanSuccess);
 });
-
-const CodeMessage = () => {
-  // Handle on success condition with the decoded text or result.
-  document.getElementById("result").innerHTML = "Scanned result: " + qrMessage;
-  // ...
-  html5QrcodeScanner.clear();
-  // ^ this will stop the scanner (video feed) and clear the scan area.
-}
-
-const qrError = () => {
-  // handle on error condition, with error message
-  alert("Error !!!");
-}
-
-html5QrcodeScanner.render(CodeMessage, qrError);
