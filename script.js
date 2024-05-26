@@ -38,7 +38,7 @@ var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
   qrbox: 250,
 });
 
-function onScanSuccess(qrMessage) {
+const CodeMessage = function () => {
   // Handle on success condition with the decoded text or result.
   document.getElementById("result").innerHTML = "Scanned result: " + qrMessage;
   // ...
@@ -46,9 +46,9 @@ function onScanSuccess(qrMessage) {
   // ^ this will stop the scanner (video feed) and clear the scan area.
 }
 
-function onScanError(errorMessage) {
+const qrError = function () => {
   // handle on error condition, with error message
   alert("Error !!!");
 }
 
-html5QrcodeScanner.render(onScanSuccess, onScanError);
+html5QrcodeScanner.render(CodeMessage, qrError);
