@@ -7,11 +7,14 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- this is the link of library which i used to generate QR Codes-->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <!-- link of library for scanning codes -->
     <title>QR Code Generator</title>
   </head>
   <body>
     <header>QR Code Generator</header>
     <main>
+      <section class="generator">
       <div>
         <legend>
           Select Color Scheme Of QR
@@ -27,6 +30,11 @@
         <div id="QR"></div>
         <button class="button" id="generate">Generate</button>
       </div>
+        </section>
+      <section class="reader">
+        <div style="width: 600px" id="reader"></div>
+        <div id="result"></div>
+      </section>
     </main>
     <footer>&copy; Abhinav 2024</footer>
     <script src="script.js"></script>
