@@ -32,3 +32,25 @@ const clearUI = () => {
 };
 
 button.addEventListener("click", submitting);
+
+// Script For QR Code Reader
+
+var html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+  fps: 10,
+  qrbox: 250,
+});
+
+function onScanSuccess(qrMessage) {
+  // Handle on success condition with the decoded text or result.
+  document.getElementById("result").innerHTML = "Scanned result: " + qrMessage;
+  // ...
+  html5QrcodeScanner.clear();
+  // ^ this will stop the scanner (video feed) and clear the scan area.
+}
+
+function onScanError(errorMessage) {
+  // handle on error condition, with error message
+  alert("Error !!!");
+}
+
+html5QrcodeScanner.render(onScanSuccess, onScanError);
