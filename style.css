@@ -1,10 +1,13 @@
-* {
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
+
+body {
   box-sizing: border-box;
-  background-color: rgb(255, 255, 255);
-  color: wheat;
+  background-color: rgba(255, 93, 19, 0.829);
+  color: rgb(0, 0, 0);
 }
 
 header {
+  font-family: "Roboto Slab", Arial, sans-serif;
   margin: auto;
   background-color: aqua;
   color: black;
@@ -14,6 +17,8 @@ header {
 }
 
 .generator {
+  font-family: "Roboto Slab", Arial, sans-serif;
+
   display: flex;
   flex-direction: column;
   /* align-items: center; */
@@ -25,11 +30,17 @@ header {
   align-items: center;
   margin: 10px;
 }
+
 #QR {
-  margin: 10px 10px 10px 50px;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
 }
 input {
   margin: 10px 10px 10px 0px;
+}
+legend {
+  padding: 3px 6px;
 }
 footer {
   margin: auto;
@@ -46,7 +57,7 @@ footer {
   font-weight: bold;
   border-radius: 4px;
   overflow: hidden;
-  color: rgb(187, 186, 186);
+  color: rgb(15, 15, 15);
   border: 1px solid #000;
   transition: all 0.2s ease-in;
   cursor: pointer;
