@@ -12,23 +12,27 @@
   <body>
     <header>QR Code Generator</header>
     <main>
-      <form class="generator">
-        <fieldset>
-          <legend>Select Color Scheme Of QR</legend>
-          <div id="Colors">
-            <label
-              >Foreground Color :<input
-                type="color"
-                id="FirstColor"
-                value="#ffffff" /></label
-            ><label
-              >Background Color :<input type="color" id="SecondColor"
-            /></label>
-          </div>
-        </fieldset>
-        <label>Enter the URL <input type="text" id="url" /></label>
+      <form class="qrgenerator">
+        <h2>Enter the URL</h2>
+        <input type="text" id="url" placeholder="Enter the URL" required />
+        <h3>Size</h3>
+        <select name="size" id="size">
+          <option value="100">100x100</option>
+          <option value="200">200x200</option>
+          <option value="300" selected>300x300</option>
+          <option value="400">400x400</option>
+          <option value="500">500x500</option>
+          <option value="600">600x600</option>
+        </select>
+
         <div id="QR"></div>
-        <button class="button" id="generate">Generate</button>
+        <div id="buttons">
+          <button class="button" id="generate">Generate</button>
+          <div
+            id="generated"
+            style="border: 1px solid #000; background-color: #ff853e"
+          ></div>
+        </div>
       </form>
     </main>
     <hr />
