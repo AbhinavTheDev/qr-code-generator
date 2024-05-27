@@ -8,12 +8,12 @@ header {
   background-color: #4463ef;
   /* font-size: larger; */
   border-radius: 5px;
-  max-width: 64rem;
+  max-width: 100%;
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem;
   font-weight: 700;
   color: #ffffff;
-  width: 100%;
+  width: calc(100% - 2rem);
 }
 
 .qrgenerator {
