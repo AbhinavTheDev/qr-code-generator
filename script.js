@@ -31,29 +31,19 @@ const clearUI = () => {
   qrdiv.innerHTML = "";
 };
 
-button.addEventListener("click", submitting);
+button.addEventListener("click",submitting);
 
-function domReady(fn) {
-    if (
-        document.readyState === "complete" ||
-        document.readyState === "interactive"
-    ) {
-        setTimeout(fn, 1000);
-    } else {
-        document.addEventListener("DOMContentLoaded", fn);
-    }
-}
- 
-domReady(function () {
- 
-    // If found you qr code
-    function onScanSuccess(decodeText, decodeResult) {
-        alert("You Qr is : " + decodeText, decodeResult);
-    }
- 
-    let htmlscanner = new Html5QrcodeScanner(
-        "my-qr-reader",
-        { fps: 10, qrbos: 250 }
-    );
-    htmlscanner.render(onScanSuccess);
-});
+
+const html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+        { facingMode: "environment" }, 
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+            console.log(`QR Code detected: ${qrCodeMessage}`);
+        },
+        errorMessage => {
+            console.error(`QR Code scan error: ${errorMessage}`);
+        }
+    ).catch(err => {
+        console.error(`Unable to start scanning: ${err}`);
+    });
