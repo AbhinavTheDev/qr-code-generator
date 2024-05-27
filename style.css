@@ -25,10 +25,6 @@ header {
   align-items: center;
   margin: 10px;
 }
-.reader {
-  background-color: #fff;
-  width: 600px;
-}
 #QR {
   margin: 10px 10px 10px 50px;
 }
