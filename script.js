@@ -47,8 +47,8 @@ const clearUI = () => {
 
 // Create save button to download QR code as image
 const SaveBtn = () => {
-  // remove existed div tags of save button
-  let existedBtn = button2.getElementsByTagName("div");
+  // remove existed button tags of save button
+  let existedBtn = button2.getElementsByClassName("SaveButton");
   // console.log(existedBtn);
   // exixtedBtn yha pr Nodelist de rha hai
   //isliye index jaruri hai node remove
@@ -56,9 +56,10 @@ const SaveBtn = () => {
   while (existedBtn.length > 0) {
     button2.removeChild(existedBtn[0]);
   }
-  // button ka div generate kra hai
-  const buttonback = document.createElement("div");
+  // Save button ka button tag generate kra hai
+  const buttonback = document.createElement("button");
   buttonback.id = "generated";
+  buttonback.className = "SaveButton";
   buttonback.style.border = "1px solid #000";
   buttonback.style.backgroundColor = "#ff853e";
 
