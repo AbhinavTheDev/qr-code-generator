@@ -26,9 +26,7 @@ nav {
 
 nav a {
   display: inline-block;
-  width: 200px;
-  height: 20px;
-  min-width: 9rem;
+  width: 130px;
   padding: 0.8rem;
   font-size: 20px;
   border-radius: 0.2rem;
@@ -44,7 +42,6 @@ nav a[aria-current="page"] {
 
 .qrgenerator {
   font-family: "Roboto Slab", Arial, sans-serif;
-
   display: flex;
   flex-direction: column;
   align-self: center;
@@ -72,7 +69,7 @@ nav a[aria-current="page"] {
   padding: 10px;
 }
 
-#generated {
+.SaveButton {
   max-width: 80rem;
   /* margin: auto; */
   width: 160px;
