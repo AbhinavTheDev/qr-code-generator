@@ -3,6 +3,7 @@ const input = document.getElementById("url");
 const qrdiv = document.getElementById("QR");
 const size = document.getElementById("size");
 const button2 = document.getElementById("buttons");
+const toggle = document.getElementById("toggle");
 let saveUrl = null;
 
 const submitting = (e) => {
@@ -86,3 +87,23 @@ const SaveBtnLink = (saveUrl) => {
 };
 
 button.addEventListener("click", submitting);
+
+// JS Code of event for dark mode toggle
+toggle.addEventListener("change", (e) => {
+  document.body.classList.toggle("dark", e.target.checked);
+});
+
+// Check if dark mode is enabled on page load
+if (localStorage.getItem("isDarkMode") === "true") {
+  darkModeToggle.checked = true;
+  document.documentElement.classList.add("dark");
+} else if (localStorage.getItem("isDarkMode") === "false") {
+  darkModeToggle.checked = false;
+  document.documentElement.classList.remove("dark");
+} else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+  darkModeToggle.checked = true;
+  document.documentElement.classList.add("dark");
+} else {
+  darkModeToggle.checked = false;
+  document.documentElement.classList.remove("dark");
+}
