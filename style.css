@@ -1,8 +1,51 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
 
+* {
+  box-sizing: border-box;
+}
+/* dark mode toggle */
+body {
+  transition: background 0.3s linear, color 0.3s linear;
+}
+
+body.dark {
+  background-color: #1f1f1f;
+  color: white;
+}
+
+.toggle-container {
+  position: absolute;
+  top: -4.4vh;
+  left: 87%;
+}
+
+#toggle-label {
+  background-image: url("/assets/night.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s linear;
+}
+
+body.dark #toggle-label {
+  background-image: url("/assets/sun.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+#toggle {
+  visibility: hidden;
+}
+/* End of toggle*/
 header {
+  position: relative;
   font-family: "Roboto Slab", Arial, sans-serif;
-  background-color: #4463ef;
+  /* background-color: #4463ef; */
+  border: 6px solid #4855ce;
   border-radius: 5px;
   margin-bottom: 2rem;
   margin: 0;
@@ -12,8 +55,8 @@ header {
   font-size: 1.25rem; /* 20px */
   line-height: 1.75rem;
   font-weight: 700;
-  color: #ffffff;
-  width: calc(100% - 2rem);
+  /* color: #ffffff; */
+  width: 100%;
 }
 nav {
   display: flex;
@@ -26,19 +69,20 @@ nav {
 
 nav a {
   display: inline-block;
-  width: 130px;
+  background-color: #e5e7eb;
+  width: 150px;
   padding: 0.8rem;
   font-size: 20px;
   border-radius: 0.2rem;
   border: solid 1px rgb(22, 22, 22);
   text-align: center;
   text-decoration: none;
-  color: #1b1b1b;
+  /* color: #1b1b1b; */
 }
-nav a[aria-current="page"] {
-  color: #000;
-  background-color: #d4d4d4;
-}
+/* nav a[aria-current="page"] {
+   color: #000; 
+   background-color: #d4d4d4; 
+}  */
 
 .qrgenerator {
   font-family: "Roboto Slab", Arial, sans-serif;
@@ -86,7 +130,7 @@ nav a[aria-current="page"] {
   /* background-color: #fa6b6b; */
 }
 input {
-  width: calc(100% - 2rem); /* Adjusted width to accommodate the margins */
+  width: 100%; /* Adjusted width to accommodate the margins */
   border-width: 2px;
   border-color: #e5e7eb;
   border-radius: 0.25rem;
@@ -98,8 +142,8 @@ input {
 
 footer {
   margin: auto;
-  background-color: rgb(253, 253, 253);
-  color: black;
+  /* background-color: rgba(128, 128, 128, 0.808);
+  color: black; */
   text-align: center;
 }
 #buttons {
