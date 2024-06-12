@@ -95,15 +95,15 @@ toggle.addEventListener("change", (e) => {
 
 // Check if dark mode is enabled on page load
 if (localStorage.getItem("isDarkMode") === "true") {
-  darkModeToggle.checked = true;
+  toggle.checked = true;
   document.documentElement.classList.add("dark");
 } else if (localStorage.getItem("isDarkMode") === "false") {
-  darkModeToggle.checked = false;
+  toggle.checked = false;
   document.documentElement.classList.remove("dark");
 } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-  darkModeToggle.checked = true;
+  toggle.checked = true;
   document.documentElement.classList.add("dark");
 } else {
-  darkModeToggle.checked = false;
+  toggle.checked = false;
   document.documentElement.classList.remove("dark");
 }
