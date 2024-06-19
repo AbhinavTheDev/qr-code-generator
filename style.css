@@ -45,7 +45,7 @@ body.dark .qrgenerator {
   );
 }
 #toggle-label {
-  background-image: url("/assets/night.png");
+  background-image: url("https://img.icons8.com/?size=100&id=ymxSGYzazOFt&format=png&color=000000");
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 50%;
@@ -58,7 +58,7 @@ body.dark .qrgenerator {
 }
 
 body.dark #toggle-label {
-  background-image: url("/assets/sun.png");
+  background-image: url("https://img.icons8.com/?size=100&id=8EUmYhfLPTCF&format=png&color=000000");
   background-size: cover;
   background-repeat: no-repeat;
   border-radius: 50%;
