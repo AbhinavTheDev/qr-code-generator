@@ -9,13 +9,13 @@
   width: 100%;
   height: 100vh;
   color: white;
-  background: url(/qr-code-generator/assets/DarkBg.webp), black;
+  background: url(https://github.com/user-attachments/assets/a616071f-38ce-4c22-bfa1-156c1be5915a), black;
   background-size: cover;
   background-repeat: no-repeat;
 }
 body.light > .container {
   color: rgb(5, 5, 5);
-  background: url(/qr-code-generator/assets/LightBg.webp), white;
+  background: url(https://github.com/user-attachments/assets/e170a294-8d61-4026-ab49-bf8cbcde4e48), white;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -35,7 +35,7 @@ body.light #toggleLabel {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: url(/assets/moon.svg);
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22icon%20icon-tabler%20icon-tabler-moon%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22%23000000%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke%3D%22none%22%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M12%203c.132%200%20.263%200%20.393%200a7.5%207.5%200%200%200%207.92%2012.446a9%209%200%201%201%20-8.313%20-12.454z%22%20%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-size: 100%;
   cursor: pointer;
@@ -75,7 +75,7 @@ header {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-image: url(/assets/light.svg);
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20class%3D%22icon%20icon-tabler%20icon-tabler-sun-high%22%20width%3D%2244%22%20height%3D%2244%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22%23ffffff%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20stroke%3D%22none%22%20d%3D%22M0%200h24v24H0z%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M14.828%2014.828a4%204%200%201%200%20-5.656%20-5.656a4%204%200%200%200%205.656%205.656z%22%20%2F%3E%3Cpath%20d%3D%22M6.343%2017.657l-1.414%201.414%22%20%2F%3E%3Cpath%20d%3D%22M6.343%206.343l-1.414%20-1.414%22%20%2F%3E%3Cpath%20d%3D%22M17.657%206.343l1.414%20-1.414%22%20%2F%3E%3Cpath%20d%3D%22M17.657%2017.657l1.414%201.414%22%20%2F%3E%3Cpath%20d%3D%22M4%2012h-2%22%20%2F%3E%3Cpath%20d%3D%22M12%204v-2%22%20%2F%3E%3Cpath%20d%3D%22M20%2012h2%22%20%2F%3E%3Cpath%20d%3D%22M12%2020v2%22%20%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-size: 100%;
   cursor: pointer;
