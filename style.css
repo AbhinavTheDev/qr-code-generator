@@ -9,13 +9,13 @@
   width: 100%;
   height: 100vh;
   color: white;
-  background: url(/assets/DarkBg.jpg), black;
+  background: url(/qr-code-generator/assets/DarkBg.webp), black;
   background-size: cover;
   background-repeat: no-repeat;
 }
 body.light > .container {
   color: rgb(5, 5, 5);
-  background: url(/assets/LightBg.jpg), white;
+  background: url(/qr-code-generator/assets/LightBg.webp), white;
   background-size: cover;
   background-repeat: no-repeat;
 }
