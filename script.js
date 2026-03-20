@@ -1,11 +1,15 @@
 // DOM references (matched to index.html)
 const form = document.getElementById("qrForm");
-const generateBtn = document.getElementById("generateBtn");
 const resetBtn = document.getElementById("resetBtn");
-const copyBtn = document.getElementById("copyBtn");
-const downloadPng = document.getElementById("downloadPng");
-const downloadSvg = document.getElementById("downloadSvg");
-const downloadWebp = document.getElementById("downloadWebp");
+
+// Preview action buttons
+const previewGenerateBtn = document.getElementById("previewGenerateBtn");
+const previewCopyBtn = document.getElementById("previewCopyBtn");
+const previewDownloadBtn = document.getElementById("previewDownloadBtn");
+const previewDownloadPng = document.getElementById("previewDownloadPng");
+const previewDownloadWebp = document.getElementById("previewDownloadWebp");
+const previewDownloadSvg = document.getElementById("previewDownloadSvg");
+const downloadMenu = document.getElementById("downloadMenu");
 
 const urlInput = document.getElementById("url");
 const urlError = document.getElementById("urlError");
@@ -23,18 +27,22 @@ const cornerType = document.getElementById("cornerType");
 
 const fgInput = document.getElementById("fg");
 const bgInput = document.getElementById("bg");
-const transparentBg = document.getElementById("transparentBg");
+const fgColorGroup = document.getElementById("fgColorGroup");
+const bgColorGroup = document.getElementById("bgColorGroup");
+const bgNone = document.getElementById("bgNone");
 
-const useGradient = document.getElementById("useGradient");
 const gradFrom = document.getElementById("gradFrom");
 const gradTo = document.getElementById("gradTo");
 const gradAngle = document.getElementById("gradAngle");
+const gradFromGroup = document.getElementById("gradFromGroup");
+const gradToGroup = document.getElementById("gradToGroup");
 
 const marginInput = document.getElementById("margin");
 const exportScale = document.getElementById("exportScale");
 
 const logoFile = document.getElementById("logoFile");
 const clearLogoBtn = document.getElementById("clearLogoBtn");
+const logoPreview = document.getElementById("logoPreview");
 const logoSize = document.getElementById("logoSize");
 const logoRadius = document.getElementById("logoRadius");
 const logoSizeVal = document.getElementById("logoSizeVal");
@@ -130,18 +138,6 @@ qr.append(qrContainer);
 let logoDataUrl = null;
 let contentType = "url";
 
-// tabs behaviour
-tabs.forEach((t) =>
-  t.addEventListener("click", () => {
-    tabs.forEach((b) => b.classList.remove("is-active"));
-    contents.forEach((c) => c.classList.remove("is-active"));
-    t.classList.add("is-active");
-    contentType = t.dataset.type || "url";
-    const el = document.getElementById(`content-${contentType}`);
-    if (el) el.classList.add("is-active");
-  })
-);
-
 // helpers for options
 const availableSize = (requested) => {
   const max = Math.min(
@@ -149,6 +145,15 @@ const availableSize = (requested) => {
     Math.max(128, Math.floor(qrContainer.clientWidth || 420))
   );
   return Math.min(requested, max);
+};
+
+// Sync button states
+const updateButtonStates = (enabled) => {
+  if (previewCopyBtn) previewCopyBtn.disabled = !enabled;
+  if (previewDownloadBtn) previewDownloadBtn.disabled = !enabled;
+  if (previewDownloadPng) previewDownloadPng.disabled = !enabled;
+  if (previewDownloadWebp) previewDownloadWebp.disabled = !enabled;
+  if (previewDownloadSvg) previewDownloadSvg.disabled = !enabled;
 };
 
 const getData = () => {
@@ -174,12 +179,20 @@ const getOptions = () => {
     Math.min(60, parseInt(marginInput.value || "0", 10))
   );
   const fg = fgInput.value || "#000000";
-  const bg = transparentBg.checked ? "transparent" : bgInput.value || "#ffffff";
+  const bg = bgNone?.classList.contains("active") ? "transparent" : bgInput.value || "#ffffff";
   const dots = { type: dotsType.value || "square" };
-  if (useGradient.checked) {
+  
+  // Check if both gradient colors are selected (not "none")
+  const gradFromNoneBtn = gradFromGroup?.querySelector(".color-none-btn");
+  const gradToNoneBtn = gradToGroup?.querySelector(".color-none-btn");
+  const gradFromActive = gradFromNoneBtn && !gradFromNoneBtn.classList.contains("active");
+  const gradToActive = gradToNoneBtn && !gradToNoneBtn.classList.contains("active");
+  
+  if (gradFromActive && gradToActive) {
     dots.gradient = {
       type: "linear",
-      rotation: (parseInt(gradAngle.value || "0", 10) || 0) * (Math.PI / 180),
+      rotation:
+        (parseInt(gradAngle?.value || "45", 10) || 45) * (Math.PI / 180),
       colorStops: [
         { offset: 0, color: gradFrom.value || fg },
         { offset: 1, color: gradTo.value || fg },
@@ -188,6 +201,7 @@ const getOptions = () => {
   } else {
     dots.color = fg;
   }
+  
   const imageSize = Math.max(
     0.08,
     (parseInt(logoSize.value || "22", 10) || 22) / 100
@@ -218,75 +232,164 @@ async function render() {
     const opts = getOptions();
     bgInput.disabled = opts.backgroundOptions.color === "transparent";
     await qr.update(opts);
-    copyBtn.disabled =
-      downloadPng.disabled =
-      downloadSvg.disabled =
-      downloadWebp.disabled =
-        false;
+    updateButtonStates(true);
   } catch (err) {
-    copyBtn.disabled =
-      downloadPng.disabled =
-      downloadSvg.disabled =
-      downloadWebp.disabled =
-        true;
+    updateButtonStates(false);
     if (contentType === "url") setError(err.message || "Invalid value.");
   }
 }
 
 // logo upload
-logoFile.addEventListener("change", () => {
-  const f = logoFile.files?.[0];
-  if (!f) {
+if (logoFile && logoPreview && clearLogoBtn) {
+  logoFile.addEventListener("change", () => {
+    const f = logoFile.files?.[0];
+    if (!f) {
+      logoDataUrl = null;
+      logoPreview.innerHTML = `
+        <div class="logo-upload-prompt">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          <span>Click to upload logo</span>
+        </div>
+      `;
+      clearLogoBtn.style.display = "none";
+      render();
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      logoDataUrl = String(reader.result);
+      logoPreview.innerHTML = `<img src="${logoDataUrl}" alt="Logo preview" />`;
+      clearLogoBtn.style.display = "flex";
+      render();
+    };
+    reader.readAsDataURL(f);
+  });
+
+  logoPreview.addEventListener("click", (e) => {
+    e.preventDefault();
+    logoFile.click();
+  });
+
+  clearLogoBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    logoFile.value = "";
     logoDataUrl = null;
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = () => {
-    logoDataUrl = String(reader.result);
-  };
-  reader.readAsDataURL(f);
-});
-clearLogoBtn.addEventListener("click", () => {
-  logoFile.value = "";
-  logoDataUrl = null;
-});
+    logoPreview.innerHTML = `
+      <div class="logo-upload-prompt">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+        <span>Click to upload logo</span>
+      </div>
+    `;
+    clearLogoBtn.style.display = "none";
+    render();
+  });
+}
 
 // UI helpers
-logoSize.addEventListener("input", () => {
-  if (logoSizeVal) logoSizeVal.textContent = logoSize.value;
-});
-logoRadius.addEventListener("input", () => {
-  if (logoRadiusVal) logoRadiusVal.textContent = logoRadius.value;
+if (logoSize && logoSizeVal && logoRadius && logoRadiusVal) {
+  logoSize.addEventListener("input", () => {
+    logoSizeVal.textContent = logoSize.value;
+    render();
+  });
+  logoRadius.addEventListener("input", () => {
+    logoRadiusVal.textContent = logoRadius.value;
+    render();
+  });
+}
+
+// Auto-render on form input changes
+const autoRenderInputs = [
+  urlInput, plainText, wifiSsid, wifiAuth, wifiPass, wifiHidden,
+  sizeSel, exportScale, fgInput, bgInput, eccSel, dotsType, cornerType,
+  marginInput, gradAngle, logoSize, logoRadius
+];
+
+autoRenderInputs.forEach(input => {
+  if (input) {
+    input.addEventListener("input", debounce(() => render(), 160));
+    if (input.type === "checkbox" || input.type === "select-one") {
+      input.addEventListener("change", debounce(() => render(), 160));
+    }
+  }
 });
 
+// Re-render on tab change
+if (tabs && tabs.length > 0 && contents && contents.length > 0) {
+  tabs.forEach((t) =>
+    t.addEventListener("click", () => {
+      tabs.forEach((b) => b.classList.remove("is-active"));
+      contents.forEach((c) => c.classList.remove("is-active"));
+      t.classList.add("is-active");
+      contentType = t.dataset.type || "url";
+      const el = document.getElementById(`content-${contentType}`);
+      if (el) el.classList.add("is-active");
+      debounce(() => render(), 160)();
+    })
+  );
+}
+
 // form handlers
-generateBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  render();
-});
-resetBtn.addEventListener("click", () => {
-  form.reset();
-  logoDataUrl = null;
-  logoSizeVal.textContent = logoSize.value;
-  logoRadiusVal.textContent = logoRadius.value;
-  useGradient.checked = false;
-  setError("");
-  // reset QR to placeholder
-  qr.update({
-    data: "",
-    width: 256,
-    height: 256,
-    qrOptions: { errorCorrectionLevel: "H", margin: 8 },
-    backgroundOptions: { color: "#ffffff" },
-    dotsOptions: { color: "#000000", type: "square" },
-    image: undefined,
+if (resetBtn) {
+  resetBtn.addEventListener("click", () => {
+    if (form) form.reset();
+    logoDataUrl = null;
+    if (logoSizeVal) logoSizeVal.textContent = logoSize?.value || "22";
+    if (logoRadiusVal) logoRadiusVal.textContent = logoRadius?.value || "8";
+    
+    // Reset color radio groups
+    const bgNoneBtn = bgColorGroup?.querySelector(".color-none-btn");
+    if (bgNoneBtn) bgNoneBtn.classList.remove("active");
+    const bgPaletteBtn = bgColorGroup?.querySelector(".color-palette-btn");
+    if (bgPaletteBtn) bgPaletteBtn.classList.add("active");
+    
+    const gradFromNoneBtn = gradFromGroup?.querySelector(".color-none-btn");
+    if (gradFromNoneBtn) gradFromNoneBtn.classList.add("active");
+    const gradFromPaletteBtn = gradFromGroup?.querySelector(".color-palette-btn");
+    if (gradFromPaletteBtn) gradFromPaletteBtn.classList.remove("active");
+    
+    const gradToNoneBtn = gradToGroup?.querySelector(".color-none-btn");
+    if (gradToNoneBtn) gradToNoneBtn.classList.add("active");
+    const gradToPaletteBtn = gradToGroup?.querySelector(".color-palette-btn");
+    if (gradToPaletteBtn) gradToPaletteBtn.classList.remove("active");
+    
+    setError("");
+    // reset logo preview
+    if (logoPreview) {
+      logoPreview.innerHTML = `
+        <div class="logo-upload-prompt">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          <span>Click to upload logo</span>
+        </div>
+      `;
+    }
+    if (clearLogoBtn) clearLogoBtn.style.display = "none";
+    // reset QR to placeholder
+    qr.update({
+      data: "",
+      width: 256,
+      height: 256,
+      qrOptions: { errorCorrectionLevel: "H", margin: 8 },
+      backgroundOptions: { color: "#ffffff" },
+      dotsOptions: { color: "#000000", type: "square" },
+      image: undefined,
+    });
+    updateButtonStates(false);
   });
-  copyBtn.disabled =
-    downloadPng.disabled =
-    downloadSvg.disabled =
-    downloadWebp.disabled =
-      true;
-});
+}
 
 // export helpers
 const makeFilename = () => {
@@ -301,33 +404,188 @@ const makeFilename = () => {
   }
 };
 
-downloadPng.addEventListener("click", async () => {
-  try {
-    const scale = parseInt(exportScale.value || "1", 10) || 1;
-    await qr.download({ name: makeFilename(), extension: "png", scale });
-  } catch {}
-});
-downloadSvg.addEventListener("click", async () => {
-  try {
-    await qr.download({ name: makeFilename(), extension: "svg", scale: 1 });
-  } catch {}
-});
-downloadWebp.addEventListener("click", async () => {
-  try {
-    const scale = parseInt(exportScale.value || "1", 10) || 1;
-    await qr.download({ name: makeFilename(), extension: "webp", scale });
-  } catch {}
+// ===== Color Radio Groups =====
+const setupColorRadioGroup = (groupId, colorInputId) => {
+  const group = document.getElementById(groupId);
+  const colorInput = document.getElementById(colorInputId);
+  
+  if (!group || !colorInput) return;
+  
+  const noneBtn = group.querySelector(".color-none-btn");
+  const paletteBtn = group.querySelector(".color-palette-btn");
+  const swatches = group.querySelector(".swatches");
+  
+  const updateActiveState = () => {
+    if (noneBtn) {
+      const isNone = noneBtn.classList.contains("active");
+      noneBtn.classList.toggle("active", isNone);
+      if (paletteBtn) paletteBtn.classList.toggle("active", !isNone);
+    }
+  };
+  
+  // None button (transparent background or no gradient)
+  if (noneBtn) {
+    noneBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      noneBtn.classList.add("active");
+      if (paletteBtn) paletteBtn.classList.remove("active");
+      render();
+    });
+  }
+  
+  // Palette button (open color picker)
+  if (paletteBtn) {
+    paletteBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (noneBtn) noneBtn.classList.remove("active");
+      paletteBtn.classList.add("active");
+      const input = paletteBtn.querySelector("input[type='color']");
+      if (input) {
+        if (typeof input.showPicker === "function") input.showPicker();
+        else input.click();
+      }
+    });
+    
+    const colorInputInBtn = paletteBtn.querySelector("input[type='color']");
+    if (colorInputInBtn) {
+      colorInputInBtn.addEventListener("change", () => {
+        colorInput.value = colorInputInBtn.value;
+        if (noneBtn) noneBtn.classList.remove("active");
+        if (paletteBtn) paletteBtn.classList.add("active");
+        render();
+      });
+    }
+  }
+  
+  // Swatch buttons
+  if (swatches) {
+    swatches.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const color = btn.style.getPropertyValue("--c");
+        colorInput.value = color;
+        const colorInputInBtn = paletteBtn?.querySelector("input[type='color']");
+        if (colorInputInBtn) colorInputInBtn.value = color;
+        if (noneBtn) noneBtn.classList.remove("active");
+        if (paletteBtn) paletteBtn.classList.add("active");
+        render();
+      });
+    });
+  }
+  
+  updateActiveState();
+};
+
+setupColorRadioGroup("fgColorGroup", "fg");
+setupColorRadioGroup("bgColorGroup", "bg");
+setupColorRadioGroup("gradFromGroup", "gradFrom");
+setupColorRadioGroup("gradToGroup", "gradTo");
+
+// ===== Download Dropdown =====
+const downloadDropdown = document.querySelector(".download-dropdown");
+
+if (previewDownloadBtn) {
+  previewDownloadBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (downloadDropdown) downloadDropdown.classList.toggle("open");
+  });
+}
+
+[previewDownloadPng, previewDownloadWebp, previewDownloadSvg].forEach((btn) => {
+  if (!btn) return;
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (downloadDropdown) downloadDropdown.classList.remove("open");
+    
+    if (btn === previewDownloadPng) {
+      try {
+        const scale = parseInt(exportScale.value || "1", 10) || 1;
+        await qr.download({ name: makeFilename(), extension: "png", scale });
+      } catch {}
+    } else if (btn === previewDownloadWebp) {
+      try {
+        const scale = parseInt(exportScale.value || "1", 10) || 1;
+        await qr.download({ name: makeFilename(), extension: "webp", scale });
+      } catch {}
+    } else if (btn === previewDownloadSvg) {
+      try {
+        await qr.download({ name: makeFilename(), extension: "svg", scale: 1 });
+      } catch {}
+    }
+  });
 });
 
-// copy PNG to clipboard
-copyBtn.addEventListener("click", async () => {
-  try {
-    const scale = parseInt(exportScale.value || "1", 10) || 1;
-    const blob = await qr.getRawData("png", scale);
-    if (navigator.clipboard && navigator.clipboard.write) {
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
-    }
-  } catch {}
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+  if (downloadDropdown && !downloadDropdown.contains(e.target)) {
+    downloadDropdown.classList.remove("open");
+  }
 });
+
+// ===== Preview Action Buttons =====
+if (previewGenerateBtn) {
+  previewGenerateBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    render();
+  });
+}
+
+if (previewCopyBtn) {
+  previewCopyBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      const scale = parseInt(exportScale.value || "1", 10) || 1;
+      const blob = await qr.getRawData("png", scale);
+      if (navigator.clipboard && navigator.clipboard.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
+      }
+    } catch {}
+  });
+}
+
+// ===== Initialization =====
+// Initialize color radio group states
+const initFgState = () => {
+  const btn = fgColorGroup?.querySelector(".color-palette-btn");
+  if (btn) btn.classList.add("active");
+};
+
+const initBgState = () => {
+  const noneBtn = bgColorGroup?.querySelector(".color-none-btn");
+  const paletteBtn = bgColorGroup?.querySelector(".color-palette-btn");
+  if (noneBtn) noneBtn.classList.remove("active");
+  if (paletteBtn) paletteBtn.classList.add("active");
+};
+
+const initGradFromState = () => {
+  const noneBtn = gradFromGroup?.querySelector(".color-none-btn");
+  const paletteBtn = gradFromGroup?.querySelector(".color-palette-btn");
+  if (noneBtn) noneBtn.classList.add("active");
+  if (paletteBtn) paletteBtn.classList.remove("active");
+};
+
+const initGradToState = () => {
+  const noneBtn = gradToGroup?.querySelector(".color-none-btn");
+  const paletteBtn = gradToGroup?.querySelector(".color-palette-btn");
+  if (noneBtn) noneBtn.classList.add("active");
+  if (paletteBtn) paletteBtn.classList.remove("active");
+};
+
+initFgState();
+initBgState();
+initGradFromState();
+initGradToState();
+
+// Initialize button states
+updateButtonStates(false);
+
+// Close dropdown when clicking outside
+if (downloadDropdown) {
+  document.addEventListener("click", (e) => {
+    if (!downloadDropdown.contains(e.target)) {
+      downloadDropdown.classList.remove("open");
+    }
+  });
+}
